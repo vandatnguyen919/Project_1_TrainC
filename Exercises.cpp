@@ -15,6 +15,7 @@ bool Login();
 void ForgotPas();
 
 void LoginInterface() {
+	
 }
 
 int main () {
@@ -41,7 +42,7 @@ int main () {
 			ForgotPas();
 			goto LoginInterface;
 	}
-
+	
 	return 0;	
 }
 
@@ -66,7 +67,7 @@ void Register() {
 	while (!feof(f)) {
 		fscanf(f, "%s %s %s",&p2.email,&p2.username,&p2.password);
 		if (!strcmp(p.email,p2.email) || !strcmp(p.username,p2.username)) {
-			printf("This email/username is already taken.");
+			printf("This email/username is already taken.\n");
 			fclose(f);
 			return;
 		} 
@@ -79,6 +80,7 @@ void Register() {
 	printf("Enter your password: "); scanf("%s", &p.password);
 	do {
 		printf("Confirm your password: "); scanf("%s", &confirmPas);
+		if (strcmp(p.password,confirmPas)) printf("Try again! ") ;
 	} while (strcmp(p.password,confirmPas));
 	f = fopen("account.txt","a");
 	// Print and save account in file 
@@ -136,10 +138,10 @@ void ForgotPas() {
 	}
 	// Check
 	if (found) {
-		printf("Found!\nHere is your password: %s\n",p2.password);
+		printf("Found! Here is your password: %s\n",p2.password);
 	}
 	else {
-		printf("Sorry.\nCannot found your account.\n");
+		printf("Sorry :( Cannot find your account.\n");
 	}
 	fclose(f);
 }
