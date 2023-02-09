@@ -29,7 +29,6 @@ int main () {
 			if (Login()) {
 				printf("Login succeed!\n");
 				goto LoginInterface;
-
 			}
 			else {
 				printf("Login failed!\n");
