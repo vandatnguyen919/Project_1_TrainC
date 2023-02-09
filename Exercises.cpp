@@ -82,6 +82,7 @@ void Register() {
 		printf("Confirm your password: "); scanf("%s", &confirmPas);
 	} while (strcmp(p.password,confirmPas));
 	f = fopen("account.txt","a");
+	// Print and save account in file 
 	fprintf(f,"%s %s %s\n",p.email,p.username,p.password);
 	printf("Your registration is successful.\n");
 	fclose(f);
@@ -134,7 +135,6 @@ void ForgotPas() {
 			break;
 		}
 	}
-	
 	// Check
 	if (found) {
 		printf("Found!\nHere is your password: %s\n",p2.password);
