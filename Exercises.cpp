@@ -56,6 +56,7 @@ void Register() {
 		printf("Cannot open/create a file.");
 		exit(1);
 	}
+
 	Account p,p2;
 	char confirmPas[MAX];
 	//Enter email and username
@@ -71,9 +72,6 @@ void Register() {
 			fclose(f);
 			return;
 		} 
-		else {
-			break;
-		}
 	}
 	fclose(f);
 	// Enter and confirm password
