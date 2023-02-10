@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define MAX 100
-// hehe
+
 struct Account{
 	char email[MAX];
 	char username[MAX];
