@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define MAX 100
+#define ACC_FILE "account.txt" 
 
 struct Account{
 	char email[MAX];
@@ -18,7 +19,7 @@ void Register() {
 	FILE *f;
 	
 	// Open/Create and read the file
-	f = fopen("account.txt","a+");
+	f = fopen(ACC_FILE,"a+");
 	if (f == NULL) {
 		printf("Cannot open/create a file.");
 		exit(1);
@@ -47,7 +48,7 @@ void Register() {
 		printf("Confirm your password: "); scanf("%s", &confirmPas);
 		if (strcmp(p.password,confirmPas)) printf("Try again! ") ;
 	} while (strcmp(p.password,confirmPas));
-	f = fopen("account.txt","a");
+	f = fopen(ACC_FILE,"a");
 	// Print and save account in file 
 	fprintf(f,"%s %s %s\n",p.email,p.username,p.password);
 	printf("Your registration is successful.\n");
@@ -58,7 +59,7 @@ bool Login() {
 	FILE *f;
 	
 	// Open and read the file
-	f = fopen("account.txt","r");
+	f = fopen(ACC_FILE,"r");
 	if (f == NULL) {
 		printf("Cannot open/create a file.");
 		exit(1);
@@ -85,7 +86,7 @@ void ForgotPas() {
 	FILE *f;
 	
 	// Open and read the file
-	f = fopen("account.txt","r");
+	f = fopen(ACC_FILE,"r");
 	Account p,p2;
 	
 	//Enter email and username
@@ -109,5 +110,10 @@ void ForgotPas() {
 		printf("Sorry :( Cannot find your account.\n");
 	}
 	fclose(f);
+}
+bool BacktoLogin() {
+	int n;
+	printf("Enter \"0\" to return to Login Interface "); scanf("%d", &n);
+	return n == 0;
 }
 #endif
