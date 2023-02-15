@@ -1,8 +1,3 @@
-#ifndef LoginSystem
-#define LoginSystem
-
-#include <stdio.h>
-#include <stdlib.h> 
 #include <string.h>
 
 #define MAX 100
@@ -116,4 +111,3 @@ bool BacktoLogin() {
 	printf("Enter \"0\" to return to Login Interface "); scanf("%d", &n);
 	return n == 0;
 }
-#endif

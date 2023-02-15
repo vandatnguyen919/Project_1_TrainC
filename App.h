@@ -1,9 +1,3 @@
-#ifndef App 
-#define App
-
-#include <stdio.h>
-#include <stdlib.h>
- 
 void Menu() {
 	
 	int choice;
@@ -25,4 +19,3 @@ void Menu() {
 	}
 }
 
-#endif
