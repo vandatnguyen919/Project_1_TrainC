@@ -35,7 +35,7 @@ int main () {
 					goto LoginInterface;
 			} else break;
 		default: 
-			printf("Invalid!\n");
+			printf("Invalid number!\n");
 			if (BacktoLogin()) {
 					goto LoginInterface;
 			} else break;
