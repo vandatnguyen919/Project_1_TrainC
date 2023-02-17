@@ -3,7 +3,7 @@ void Menu() {
 	int choice;
 	
 	system("cls");
-	printf("---WELCOME TO eFCode---\n");
+	printf("---------------WELCOME TO eFCode---------------\n");
 	printf("1.Purchase\n2.Add to cart\n0.Exit\nChoice: ");
 	scanf("%d", &choice);
 	
