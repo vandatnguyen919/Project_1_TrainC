@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <Windows.h>
+#include <windows.h>
 #include "LoginSystem.h"
 #include "App.h"
 
@@ -8,24 +8,48 @@ int main () {
 	
 	LoginInterface:
 	system("cls");
-	system("COLOR 0F");
-	printf("----------------Login Interface-----------------\n1.Login\n2.Register\n3.Forgot your password?\n0.Exit\nChoice: ");
+		
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+	GetConsoleScreenBufferInfo(console, &consoleInfo);
+	int consoleWidth = consoleInfo.srWindow.Right - consoleInfo.srWindow.Left + 1;
+	char text1[] = "-----Login Interface-----"; 
+	char text2[] = "1. Login";
+	char text3[] = "2. Register";
+	char text4[] = "3. Forgot your password?";
+	char text5[] = "0. Exit";
+	char text6[] = "Choice: ";
+	char text7[] = "-------------------------"; 
 	
+	int padding = (consoleWidth - sizeof(text1)) / 2;
+	printf("\n\n\n\n\n\n\n\n\n\n\n");
+	printf("%*s%s%*s\n",padding, "", text1, padding, "");
+	printf("%*s%s%*s\n",padding, "", text2, padding, "");
+	printf("%*s%s%*s\n",padding, "", text3, padding, "");
+	printf("%*s%s%*s\n",padding, "", text4, padding, "");
+	printf("%*s%s%*s\n",padding, "", text5, padding, "");
+	printf("%*s%s",padding, "", text6);
+
 	int choice; scanf("%d",&choice);
-	Beep (432, 300);
+	printf("%*s%s%*s\n",padding, "", text7, padding, "");
 	switch (choice) {
 		case 0:
 			break;
 		case 1: 
-			if (Login()) {
+			int n;
+			n = Login();
+			if (n == 1) {
 				printf("Login succeed!\n");
-				Beep (432, 300);
-				Menu();
+				StudentMenu();
+				break;
+			}
+			else if (n == 2) {
+				printf("Login succeed!\n");
+				AdminMenu();
 				break;
 			}
 			else {
 				printf("Login failed!\n");
-				Beep (432, 300);
 				if (BacktoLogin()) {
 					goto LoginInterface;
 				} else break;
@@ -33,17 +57,19 @@ int main () {
 		case 2: 
 			Register();
 			if (BacktoLogin()) {
-					goto LoginInterface;
+				goto LoginInterface;
 			} else break;
+			
 		case 3:
 			ForgotPas();
 			if (BacktoLogin()) {
-					goto LoginInterface;
+				goto LoginInterface;
 			} else break;
+			
 		default: 
 			printf("Invalid number!\n");
 			if (BacktoLogin()) {
-					goto LoginInterface;
+				goto LoginInterface;
 			} else break;
 	}
 	
