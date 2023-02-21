@@ -8,21 +8,47 @@ int main () {
 	
 	LoginInterface:
 	system("cls");
-		
+//	system("COLOR 0D");
+
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 	GetConsoleScreenBufferInfo(console, &consoleInfo);
 	int consoleWidth = consoleInfo.srWindow.Right - consoleInfo.srWindow.Left + 1;
+ 
+ 	char logo1[] = "#####     #### ##### ####  #####     ## ## ";
+ 	char logo2[] = "##       ##### ## ## ## ## ##       #######";
+ 	char logo3[] = "##### ## ##    ## ## ## ## ####      ##### ";
+ 	char logo4[] = "##       ##### ## ## ## ## ##         ###  ";
+ 	char logo5[] = "##        #### ##### ####  ####        #   ";
+ 	
+	char line1[] = "##    ## ####  ####   ###  ####  ## ##";
+	char line2[] = "##    ## ## ## ## ## ##### ## ## ## ##"; 
+	char line3[] = "##    ## ####  ####  ## ## ####   ### "; 
+	char line4[] = "##### ## ## ## ## ## ##### ## ##   ## "; 
+	char line5[] = "##### ## ####  ## ## ## ## ## ##  ##  "; 
+
 	char text1[] = "-----Login Interface-----"; 
-	char text2[] = "1. Login";
-	char text3[] = "2. Register";
-	char text4[] = "3. Forgot your password?";
-	char text5[] = "0. Exit";
+	char text2[] = "1. Login                 ";
+	char text3[] = "2. Register              ";
+	char text4[] = "3. Forgot your password? ";
+	char text5[] = "0. Exit                  ";
 	char text6[] = "Choice: ";
-	char text7[] = "-------------------------"; 
 	
+	int textPadding = (consoleWidth - sizeof(logo1)) / 2;
 	int padding = (consoleWidth - sizeof(text1)) / 2;
-	printf("\n\n\n\n\n\n\n\n\n\n\n");
+	printf("%*s%s%*s\n",textPadding, "", logo1, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", logo2, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", logo3, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", logo4, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", logo5, textPadding, "");
+
+	printf("\n");
+	printf("%*s%s%*s\n",textPadding, "", line1, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", line2, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", line3, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", line4, textPadding, "");
+	printf("%*s%s%*s\n",textPadding, "", line5, textPadding, "");
+	printf("\n");
 	printf("%*s%s%*s\n",padding, "", text1, padding, "");
 	printf("%*s%s%*s\n",padding, "", text2, padding, "");
 	printf("%*s%s%*s\n",padding, "", text3, padding, "");
@@ -31,7 +57,6 @@ int main () {
 	printf("%*s%s",padding, "", text6);
 
 	int choice; scanf("%d",&choice);
-	printf("%*s%s%*s\n",padding, "", text7, padding, "");
 	switch (choice) {
 		case 0:
 			break;
