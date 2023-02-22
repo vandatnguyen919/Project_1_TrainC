@@ -5,25 +5,51 @@
 #define BOOK_BRW "bookborrow.txt"
 
 void AddBook();
-void SearchBook();
 void BorrowBook();
+void ListBook();
 void ListBorrowedBook();
-void ReturnBook();
+void SearchBook();
 void SearchMember();
+void ReturnBook();
 bool BacktoMenu();
 
 struct Book{
 	char BookName[MAX];
 } typedef Book;
 
+void Logo() {
+	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+	GetConsoleScreenBufferInfo(console, &consoleInfo);
+	int consoleWidth = consoleInfo.srWindow.Right - consoleInfo.srWindow.Left + 1;
+	
+	char line1[] = "##    ## ####  ####   ###  ####  ## ##";
+	char line2[] = "##    ## ## ## ## ## ##### ## ## ## ##"; 
+	char line3[] = "##    ## ####  ####  ## ## ####   ### "; 
+	char line4[] = "##### ## ## ## ## ## ##### ## ##   ## "; 
+	char line5[] = "##### ## ####  ## ## ## ## ## ##  ##  ";
+	char line6[] = "--------------------------------------";
+	char line7[] = "    ---WELCOME TO FCODE LIBRARY---    ";
+	int padding = (consoleWidth - sizeof(line1)) / 2;
+	printf("%*s%s%*s\n",padding, "", line1, padding, "");
+	printf("%*s%s%*s\n",padding, "", line2, padding, "");
+	printf("%*s%s%*s\n",padding, "", line3, padding, "");
+	printf("%*s%s%*s\n",padding, "", line4, padding, "");
+	printf("%*s%s%*s\n",padding, "", line5, padding, "");
+	printf("%*s%s%*s\n",padding, "", line6, padding, "");
+	printf("%*s%s%*s\n",padding, "", line7, padding, "");
+
+} 
+
 void StudentMenu() {
 	
 	Menu:
-	int choice;
-	
 	system("cls");
-	printf("---------------------------------Hello, WELCOME TO eFCode\n");
-	printf("1.Search books\n2.Borrow a book\n3.Return the book\nChoice: ");
+	Logo();
+	
+	int choice;
+	printf("Hi! :D\n");
+	printf("1.Search a book\n2.List all books\n3.Borrow a book\n4.Return the book\n0.Exit\nChoice: ");
 	scanf("%d", &choice);
 	
 	switch (choice) {
@@ -33,11 +59,16 @@ void StudentMenu() {
 				goto Menu;
 			} else break;
 		case 2:
-			BorrowBook();
+			ListBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
 		case 3:
+			BorrowBook();
+			if (BacktoMenu()) {
+				goto Menu;
+			} else break;
+		case 4:
 			ReturnBook();
 			if (BacktoMenu()) {
 				goto Menu;
@@ -48,11 +79,12 @@ void StudentMenu() {
 void AdminMenu() {
 
 	Menu:
-	int choice;
-	
 	system("cls");
-	printf("---------------------------Hello Admin, WELCOME TO eFCode\n");
-	printf("1.Add a book\n2.List borrowed books\n3.Search books\n4.Search members\n5.Return the book\nChoice: ");
+	Logo();
+	
+	int choice;
+	printf("Hi, admin :D\n");
+	printf("1.Add a book\n2.Search a book\n3.Search members\n4.List all books\n5.List all borrowed books\n6.Borrow a book\n7.Return the book\n0.Exit\nChoice: ");
 	scanf("%d", &choice);
 	
 	switch (choice) {
@@ -62,25 +94,35 @@ void AdminMenu() {
 				goto Menu;
 			} else break;
 		case 2:
-			ListBorrowedBook();
-			if (BacktoMenu()) {
-				goto Menu;
-			} else break;
-		case 3:
 			SearchBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
-		case 4:
+		case 3:
 			SearchMember();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
+		case 4:
+			ListBook();
+			if (BacktoMenu()) {
+				goto Menu;
+			} else break;
 		case 5:
-			printf("Fifth choice.\n");
+			ListBorrowedBook();
+			if (BacktoMenu()) {
+				goto Menu;
+			} else break;
+		case 6:
+			BorrowBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;	
+		case 7:
+			ReturnBook();
+			if (BacktoMenu()) {
+				goto Menu;
+			} else break;
 	}
 }
 
@@ -106,7 +148,7 @@ void AddBook() {
 
 void BorrowBook() {
 	
-	SearchBook();
+	ListBook();
 	
 	//Open files
     FILE *f = fopen(BOOK_FILE, "r");
@@ -156,6 +198,25 @@ void BorrowBook() {
 	}
 	printf("Successful!\n");
 } 
+
+void ListBook() {
+	char line[MAX];
+	int countBook = 0;
+	FILE *f;
+	
+	Book b;
+	f = fopen(BOOK_FILE, "r");
+	if (f == NULL) {
+		printf("Cannot open/create a file.\n");
+		exit(1);
+	}
+	printf("Books:\n");
+	while (fgets(line, sizeof(line), f) != NULL) {
+		countBook++;
+		printf("%d. %s", countBook, line);
+	}
+	fclose(f);
+}
 
 void ListBorrowedBook() {
 	
@@ -236,22 +297,36 @@ void Update() {
 
 void SearchBook() {
 	
-	char line[MAX];
-	int countBook = 0;
-	FILE *f;
+	ListBook();
 	
-	Book b;
-	f = fopen(BOOK_FILE, "r");
+	FILE *f = fopen(BOOK_FILE, "r");
 	if (f == NULL) {
-		printf("Cannot open/create a file.\n");
+		printf("Cannot open the file.\n");
 		exit(1);
 	}
-	printf("Books:\n");
-	while (fgets(line, sizeof(line), f) != NULL) {
-		countBook++;
-		printf("%d. %s", countBook, line);
+	
+	printf("Enter the name of a book: ");
+	Book b;
+	getchar();
+	fgets(b.BookName, sizeof(b.BookName), stdin);
+	char line[MAX];
+	int lineNum = 1;
+	bool found = false;
+	while (fgets(line, sizeof(line), f)) {
+		if (!strcmp(b.BookName,line)) {
+			found = true;
+			break;
+		}
+		lineNum++;
 	}
 	fclose(f);
+	if (found) {
+		printf("Found! Your book is on line: %d\n", lineNum);
+	} 
+	else {
+		printf("Sorry. We could not find your book.\n");
+	}
+	
 }
 
 void SearchMember() {
