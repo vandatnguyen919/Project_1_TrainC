@@ -1,10 +1,14 @@
-//#include "LoginSystem.h"
 
 #define MAX 100
 #define BOOK_FILE "book.txt"
+#define BOOK_TEMP "booktemp.txt"
+#define BOOK_BRW "bookborrow.txt"
 
 void AddBook();
 void SearchBook();
+void BorrowBook();
+void ListBorrowedBook();
+void ReturnBook();
 void SearchMember();
 bool BacktoMenu();
 
@@ -29,12 +33,12 @@ void StudentMenu() {
 				goto Menu;
 			} else break;
 		case 2:
-			printf("Second choice.\n");
+			BorrowBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
 		case 3:
-			printf("Third choice.\n");
+			ReturnBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;	
@@ -48,7 +52,7 @@ void AdminMenu() {
 	
 	system("cls");
 	printf("---------------------------Hello Admin, WELCOME TO eFCode\n");
-	printf("1.Add a book\n2.Update\n3.Search books\n4.Search members\n5.Return the book\nChoice: ");
+	printf("1.Add a book\n2.List borrowed books\n3.Search books\n4.Search members\n5.Return the book\nChoice: ");
 	scanf("%d", &choice);
 	
 	switch (choice) {
@@ -58,7 +62,7 @@ void AdminMenu() {
 				goto Menu;
 			} else break;
 		case 2:
-			printf("Second choice.\n");
+			ListBorrowedBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
@@ -99,6 +103,132 @@ void AddBook() {
 	printf("The book is added.\n");
 	fclose(f);
 }
+
+void BorrowBook() {
+	
+	SearchBook();
+	
+	//Open files
+    FILE *f = fopen(BOOK_FILE, "r");
+	if (f == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	} 
+    FILE *f_temp = fopen(BOOK_TEMP, "w");
+    if (f_temp == NULL) {
+		printf("Cannot open the file.\n");
+		fclose(f);
+		exit(1);
+	} 
+	FILE *f_borrow = fopen(BOOK_BRW, "a");
+	if (f_borrow == NULL) {
+		printf("Cannot open the file.\n");
+		fclose(f);
+		fclose(f_temp);
+		exit(1);
+	} 
+	//Read lines from original file and write them to temp file
+	char line[MAX];
+	int lineNum = 1, choice; 
+	printf("Choose a book to borrow: "); scanf("%d", &choice);
+	while (fgets(line, sizeof(line), f) != NULL) {
+		if (lineNum != choice) {
+			fprintf(f_temp, "%s", line);
+		} else {
+			fprintf(f_borrow, "%s", line);
+		}
+		lineNum++;
+	}
+	
+	fclose(f);
+	fclose(f_temp);
+	fclose(f_borrow);
+	
+	//Remove the old file
+	if (remove(BOOK_FILE) != 0) {
+		printf("Cannot remove the orignal file.\n");
+		exit(1);
+	}
+	//Rename the temp file's name to the original file's name
+	if (rename(BOOK_TEMP, BOOK_FILE) != 0) {
+		printf("Cannot remane the temporary file.\n");
+		exit(1);
+	}
+	printf("Successful!\n");
+} 
+
+void ListBorrowedBook() {
+	
+	char line[MAX];
+	int countBook = 0;
+	FILE *f;
+	
+	Book b;
+	f = fopen(BOOK_BRW, "r");
+	if (f == NULL) {
+		printf("Cannot open/create a file.\n");
+		exit(1);
+	}
+	printf("Books:\n");
+	while (fgets(line, sizeof(line), f) != NULL) {
+		countBook++;
+		printf("%d. %s", countBook, line);
+	}
+	fclose(f);
+}
+
+void ReturnBook() {
+	
+	ListBorrowedBook();
+	
+	//Open files
+    FILE *f = fopen(BOOK_FILE, "a");
+	if (f == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	} 
+    FILE *f_temp = fopen(BOOK_TEMP, "w");
+    if (f_temp == NULL) {
+		printf("Cannot open the file.\n");
+		fclose(f);
+		exit(1);
+	} 
+	FILE *f_borrow = fopen(BOOK_BRW, "r");
+	if (f_borrow == NULL) {
+		printf("Cannot open the file.\n");
+		fclose(f);
+		fclose(f_temp);
+		exit(1);
+	} 
+	//Read lines from original file and write them to temp file
+	char line[MAX];
+	int lineNum = 1, choice; 
+	printf("Choose a book to return: "); scanf("%d", &choice);
+	while (fgets(line, sizeof(line), f_borrow) != NULL) {
+		if (lineNum == choice) {
+			fprintf(f, "%s", line);
+		} else {
+			fprintf(f_temp, "%s", line);
+		}
+		lineNum++;
+	}
+	
+	fclose(f);
+	fclose(f_temp);
+	fclose(f_borrow);
+	
+	//Remove the old file
+	if (remove(BOOK_BRW) != 0) {
+		printf("Cannot remove the orignal file.\n");
+		exit(1);
+	}
+	//Rename the temp file's name to the original file's name
+	if (rename(BOOK_TEMP, BOOK_BRW) != 0) {
+		printf("Cannot rename the temporary file.\n");
+		exit(1);
+	}
+	printf("Successful!\n");
+} 
 
 void Update() {
 	

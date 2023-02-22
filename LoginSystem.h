@@ -58,6 +58,7 @@ void Register() {
 	char text5[] = "Enter your password: ";
 	char text6[] = "Confirm your password: ";
 	printf("%*s%s",padding, "", text5); scanf("%s", &p.password);
+	getchar();
 	do {
 		printf("%*s%s",padding, "", text6); scanf("%s", &confirmPas);
 		if (strcmp(p.password,confirmPas)) printf("Try again!\n") ;
@@ -117,7 +118,7 @@ int Login() {
 	char text7[] = "Enter your password: "; 
 	printf("%*s%s",padding, "", text6); scanf("%s",&p.username);
 	printf("%*s%s",padding, "", text7); scanf("%s",&p.password);
-	
+
 	// Scan username and password in file 
 	while (!feof(f)) {
 		fscanf(f, "%s %s %s",&p2.email,&p2.username,&p2.password);
@@ -152,7 +153,7 @@ void ForgotPas() {
 	
 	//Enter email and username
 	char text3[] = "Enter your email: ";
-	char text4[] = "Enter your usernam: ";
+	char text4[] = "Enter your username: ";
 	printf("%*s%s",padding, "", text3); scanf("%s",&p.email);
 	printf("%*s%s",padding, "", text4); scanf("%s",&p.username);
 	

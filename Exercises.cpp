@@ -8,7 +8,7 @@ int main () {
 	
 	LoginInterface:
 	system("cls");
-//	system("COLOR 0D");
+	system("COLOR 0F");
 
 	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
