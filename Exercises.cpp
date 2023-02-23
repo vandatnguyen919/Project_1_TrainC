@@ -56,21 +56,22 @@ int main () {
 	printf("%*s%s%*s\n",padding, "", text5, padding, "");
 	printf("%*s%s",padding, "", text6);
 
+	Account person;
 	int choice; scanf("%d",&choice);
 	switch (choice) {
 		case 0:
 			break;
 		case 1: 
 			int n;
-			n = Login();
+			n = Login(&person);
 			if (n == 1) {
 				printf("Login succeed!\n");
-				StudentMenu();
+				StudentMenu(&person);
 				break;
 			}
 			else if (n == 2) {
 				printf("Login succeed!\n");
-				AdminMenu();
+				AdminMenu(&person);
 				break;
 			}
 			else {

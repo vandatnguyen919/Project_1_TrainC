@@ -71,7 +71,7 @@ void Register() {
 	fclose(f);
 }
 
-int Login() {
+int Login(Account *person) {
 
 	FILE *f;
 	
@@ -124,6 +124,7 @@ int Login() {
 		fscanf(f, "%s %s %s",&p2.email,&p2.username,&p2.password);
 		if (!strcmp(p.username,p2.username) && !strcmp(p.password,p2.password)) {
 			fclose(f);
+			strcpy(person->username, p.username);
 			return n;
 		} 
 	}
