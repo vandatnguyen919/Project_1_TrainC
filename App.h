@@ -13,13 +13,13 @@ void AddBook();
 void AddUpdate(Book *book);
 void BorrowBook(Account *person);
 void BorrowUpdate(Account *person, Book *book);
+void ReturnBook(Account *person);
+void ReturnUpdate(Account *person, Book *book);
 void ReturnDate();
 void ListBook();
 void ListBorrowedBook();
 void SearchBook();
 void SearchMember();
-void ReturnBook(Account *person);
-void ReturnUpdate(Account *person, Book *book);
 void Update();
 bool BacktoMenu();
 
@@ -165,23 +165,19 @@ void AddBook() {
 void AddUpdate(Book *book) {
 	
 	time_t current_time;
-	char *c_time_string;
 	
 	//Obtain current time
 	current_time = time(NULL);
-	
-	//Convert to local time format
-	c_time_string = ctime(&current_time);
-		
+			
 	FILE *f = fopen("updateInformation.txt", "a");
 	if (f == NULL) {
 		printf("Cannot open the file.\n");
 		exit(1);
 	}
-	fprintf(f, "%s", c_time_string);
+	fprintf(f, "%s", ctime(&current_time));
 	fprintf(f, "%s-->is added\n", book->BookName);
 	fclose(f);
-	printf("\nYour book is added on %s\n", c_time_string);
+	printf("\nYour book is added on %s\n", ctime(&current_time));
 } 
 
 void BorrowBook(Account *person) {
@@ -242,18 +238,12 @@ void BorrowBook(Account *person) {
 void BorrowUpdate(Account *person, Book *book) {
 	
 	time_t current_time, future_time;
-	char *c_time_string;
-	struct tm *time_info;
 	
 	//Obtain current time
 	current_time = time(NULL);
 	
 	//Add 7 days
 	future_time = current_time + (7 *24 * 60 * 60);
-	
-	//Convert to local time format
-	c_time_string = ctime(&current_time);
-	time_info = localtime(&future_time);
 	
 	FILE *f = fopen("updateInformation.txt", "a");
 	if (f == NULL) {
@@ -266,18 +256,18 @@ void BorrowUpdate(Account *person, Book *book) {
 		exit(1);
 	}
 	//Save in updateInformation file
-	fprintf(f, "%s", c_time_string);
+	fprintf(f, "%s", ctime(&current_time));
 	fprintf(f, "%s-->is borrowed by %s\n", book->BookName, person->username);
 	
 	//Save in returnDate file
-	fprintf(f2, "%s", asctime(time_info));
+	fprintf(f2, "%s", ctime(&future_time));
 	fprintf(f2, "-->%s should return the book's name: %s", person->username, book->BookName);
 	
 	fclose(f);
 	fclose(f2);
 	
 	printf("\nYou borrowed the book on %s", ctime(&current_time));
-	printf("You have to return the book to the library on %s\n", asctime(time_info));
+	printf("You have to return the book to the library on %s\n", ctime(&future_time));
 } 
 
 void ReturnDate() {
@@ -309,7 +299,34 @@ void ListBook() {
 		countBook++;
 		printf("%d. %s", countBook, line);
 	}
+	printf("TOTAL: %d\n", countBook);
 	fclose(f);
+}
+
+void ListMember() {
+	
+	char line[MAX];
+	int countStudent = 0;
+	FILE *f;
+	
+	Account p;
+	f = fopen(STU_FILE, "r");
+	if (f == NULL) {
+		printf("Cannot open/create a file.\n");
+		exit(1);
+	}
+	printf("Members:\n");
+	while (fgets(line, sizeof(line), f) != NULL) {
+		countStudent++;
+	}
+	fseek(f, 0, SEEK_SET);
+	for (int i = 1; i <= countStudent; i++) {
+		fscanf(f, "%s %s %s", &p.email, &p.username, &p.password);
+		printf("%d. %s\n", i, p.username);
+	}
+	printf("TOTAL: %d\n", countStudent);
+	fclose(f);
+	
 }
 
 void ListBorrowedBook() {
@@ -391,23 +408,19 @@ void ReturnBook(Account *person) {
 void ReturnUpdate(Account *person, Book *book) {
 	
 	time_t current_time;
-	char *c_time_string;
 	
 	//Obtain current time
 	current_time = time(NULL);
-	
-	//Convert to local time format
-	c_time_string = ctime(&current_time);
-		
+			
 	FILE *f = fopen("updateInformation.txt", "a");
 	if (f == NULL) {
 		printf("Cannot open the file.\n");
 		exit(1);
 	}
-	fprintf(f, "%s", c_time_string);
-	fprintf(f, "-->%s return %s",person->username, book->BookName);
+	fprintf(f, "%s", ctime(&current_time));
+	fprintf(f, "-->%s returned %s",person->username, book->BookName);
 	fclose(f);
-	printf("\nYour book is returned on %s\n", c_time_string);
+	printf("\nYour book is returned on %s\n", ctime(&current_time));
 }
 
 void Update() {
@@ -460,32 +473,34 @@ void SearchBook() {
 
 void SearchMember() {
 	
-	char line[MAX];
-	int countStudent = 0;
-	FILE *f;
+	ListMember();
 	
-	Account p;
-	f = fopen(STU_FILE, "r");
-	if (f == NULL) {
-		printf("Cannot open/create a file.\n");
-		exit(1);
+	FILE *f = fopen(STU_FILE, "r");
+	Account p, file;
+	bool found = false;
+	int lineNum = 1;
+	printf("Enter member's username: "); scanf("%s", &p.username);
+	while(!feof(f)) {
+		fscanf(f, "%s %s %s", &file.email, &file.username, &file.password);
+		if (!strcmp(p.username, file.username)) {
+			found = true;
+			break;
+		}
+		lineNum++;
 	}
-	printf("Members:\n");
-	while (fgets(line, sizeof(line), f) != NULL) {
-		countStudent++;
-	}
-	fseek(f, 0, SEEK_SET);
-	for (int i = 1; i <= countStudent; i++) {
-		fscanf(f, "%s %s %s", &p.email, &p.username, &p.password);
-		printf("%d. %s\n", i, p.username);
-	}
-	printf("TOTAL: %d\n", countStudent);
 	fclose(f);
+	if (found) {
+		printf("Found! the member's name is on line: %d\n", lineNum);
+	}
+	else {
+		printf("Sorry. We could not find that member's name.\n");
+	}
+	
 }
 
 bool BacktoMenu() {
 	int n;
-	printf("Enter \"0\" to return to Menu: "); scanf("%d", &n);
+	printf("\nEnter \"0\" to return to Menu: "); scanf("%d", &n);
 	return n == 0;
 }
 

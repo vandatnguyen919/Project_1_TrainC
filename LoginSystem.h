@@ -4,7 +4,6 @@
 #define STU_FILE "student.txt" 
 #define ADM_FILE "admin.txt"
 
-
 struct Account{
 	char email[MAX];
 	char username[MAX];
