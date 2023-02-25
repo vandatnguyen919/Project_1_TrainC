@@ -9,18 +9,26 @@ struct Book{
 	char BookName[MAX];
 } typedef Book;
 
+//Features
 void AddBook();
-void AddUpdate(Book *book);
-void BorrowBook(Account *person);
-void BorrowUpdate(Account *person, Book *book);
-void ReturnBook(Account *person);
-void ReturnUpdate(Account *person, Book *book);
-void ReturnDate();
-void ListBook();
-void ListBorrowedBook();
+void DeleteBook();
 void SearchBook();
 void SearchMember();
-void Update();
+void BorrowBook(Account *person);
+void ReturnBook(Account *person);
+void ListBook();
+void ListBorrowedBook();
+int countBook();
+int countBBook();
+
+//Update Information
+void CheckUpdate();
+void CheckReturnDate();
+void AddUpdate(Book *book);
+void DeleteUpdate(Book *book);
+void BorrowUpdate(Account *person, Book *book);
+void ReturnUpdate(Account *person, Book *book);
+
 bool BacktoMenu();
 
 void Logo() {
@@ -55,17 +63,17 @@ void StudentMenu(Account *person) {
 	
 	int choice;
 	printf("Hi, %s :D (student)\n", person->username);
-	printf("1.Search a book\n2.List all books\n3.Borrow a book\n4.Return a book\n0.Exit\nChoice: ");
+	printf("1.List all books\n2.Search a book\n3.Borrow a book\n4.Return a book\n0.Exit\nChoice: ");
 	scanf("%d", &choice);
 	
 	switch (choice) {
 		case 1:
-			SearchBook();
+			ListBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
 		case 2:
-			ListBook();
+			SearchBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
@@ -90,7 +98,7 @@ void AdminMenu(Account *person) {
 	
 	int choice;
 	printf("Hi, %s :D (admin)\n", person->username);
-	printf("1.Add a book\n2.Search a book\n3.Search members\n4.List all books\n5.List all borrowed books\n6.Borrow a book\n7.Return a book\n8.Check updated information\n9.Check return date\n0.Exit\nChoice: ");
+	printf("1.Add a book\n2.Delete a book\n3.Search a book\n4.Search members\n5.List all borrowed books\n6.Borrow a book\n7.Return a book\n8.Check information\n9.Check return date\n0.Exit\nChoice: ");
 	scanf("%d", &choice);
 	
 	switch (choice) {
@@ -100,17 +108,17 @@ void AdminMenu(Account *person) {
 				goto Menu;
 			} else break;
 		case 2:
-			SearchBook();
+			DeleteBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
 		case 3:
-			SearchMember();
+			SearchBook();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
 		case 4:
-			ListBook();
+			SearchMember();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
@@ -130,12 +138,12 @@ void AdminMenu(Account *person) {
 				goto Menu;
 			} else break;
 		case 8:
-			Update();
+			CheckUpdate();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
 		case 9:
-			ReturnDate();
+			CheckReturnDate();
 			if (BacktoMenu()) {
 				goto Menu;
 			} else break;
@@ -175,15 +183,89 @@ void AddUpdate(Book *book) {
 		exit(1);
 	}
 	fprintf(f, "%s", ctime(&current_time));
-	fprintf(f, "%s-->is added\n", book->BookName);
+	fprintf(f, "-->admin added %s", book->BookName);
 	fclose(f);
-	printf("\nYour book is added on %s\n", ctime(&current_time));
+	printf("\nThe book is added on %s", ctime(&current_time));
 } 
+
+void DeleteBook() {
+	
+	ListBook();
+	
+	Book b;
+	char line[MAX];
+	int lineNum = 1, choice;
+	printf("Choose a line number to delete the book: "); scanf("%d", &choice);
+	if (choice < 1 || choice > countBook()) {
+		printf("\nInvalid value!");
+		return;
+	}
+	FILE *f = fopen(BOOK_FILE, "r");
+	if (f == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	}
+	FILE *f_temp = fopen(BOOK_TEMP, "w");
+	if (f_temp == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	}
+	while (fgets(line, sizeof(line), f) != NULL) {
+		if (lineNum != choice) {
+			fprintf(f_temp, "%s", line);
+		} else {
+			strcpy(b.BookName, line);
+		}
+		lineNum++;
+	}
+	fclose(f);
+	fclose(f_temp);
+	
+	//Remove the old file
+	if (remove(BOOK_FILE) != 0) {
+		printf("Cannot remove the orignal file.\n");
+		exit(1);
+	}
+	//Rename the temp file's name to the original file's name
+	if (rename(BOOK_TEMP, BOOK_FILE) != 0) {
+		printf("Cannot remane the temporary file.\n");
+		exit(1);
+	}
+	
+	DeleteUpdate(&b);
+	
+} 
+
+void DeleteUpdate(Book *book) {
+	
+	time_t current_time;
+	
+	current_time = time(NULL);
+	
+	FILE *f = fopen("updateInformation.txt", "a");
+	if (f == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	}
+	fprintf(f, "%s", ctime(&current_time));
+	fprintf(f, "-->admin deleted %s", book->BookName);
+	fclose(f);
+	printf("\nThe book is deleted on %s", ctime(&current_time));
+	
+}
 
 void BorrowBook(Account *person) {
 	
 	ListBook();
 	
+	Book b;
+	char line[MAX];
+	int lineNum = 1, choice; 
+	printf("Choose a line number to borrow the book: "); scanf("%d", &choice);
+	if (choice < 1 || choice > countBook()) {
+		printf("\nInvalid value!");
+		return;
+	}
 	//Open files
     FILE *f = fopen(BOOK_FILE, "r");
 	if (f == NULL) {
@@ -204,10 +286,6 @@ void BorrowBook(Account *person) {
 		exit(1);
 	} 
 	//Read lines from original file and write them to temp file
-	Book b;
-	char line[MAX];
-	int lineNum = 1, choice; 
-	printf("Choose a book to borrow: "); scanf("%d", &choice);
 	while (fgets(line, sizeof(line), f) != NULL) {
 		if (lineNum != choice) {
 			fprintf(f_temp, "%s", line);
@@ -257,11 +335,11 @@ void BorrowUpdate(Account *person, Book *book) {
 	}
 	//Save in updateInformation file
 	fprintf(f, "%s", ctime(&current_time));
-	fprintf(f, "%s-->is borrowed by %s\n", book->BookName, person->username);
+	fprintf(f, "-->%s borrowed %s", person->username, book->BookName);
 	
 	//Save in returnDate file
 	fprintf(f2, "%s", ctime(&future_time));
-	fprintf(f2, "-->%s should return the book's name: %s", person->username, book->BookName);
+	fprintf(f2, "-->%s must return the book's name: %s", person->username, book->BookName);
 	
 	fclose(f);
 	fclose(f2);
@@ -270,7 +348,7 @@ void BorrowUpdate(Account *person, Book *book) {
 	printf("You have to return the book to the library on %s\n", ctime(&future_time));
 } 
 
-void ReturnDate() {
+void CheckReturnDate() {
 	
 	FILE *f = fopen("returnDate.txt", "r");
 	if (f == NULL) {
@@ -353,6 +431,15 @@ void ReturnBook(Account *person) {
 	
 	ListBorrowedBook();
 	
+	Book b;
+	char line[MAX];
+	int lineNum = 1, choice; 
+	printf("Choose a line number to return the book: "); scanf("%d", &choice);
+	if (choice < 1 || choice > countBBook()) {
+		printf("\nInvalid value!");
+		return;
+	}
+	
 	//Open files
     FILE *f = fopen(BOOK_FILE, "a");
 	if (f == NULL) {
@@ -373,10 +460,6 @@ void ReturnBook(Account *person) {
 		exit(1);
 	} 
 	//Read lines from original file and write them to temp file
-	Book b;
-	char line[MAX];
-	int lineNum = 1, choice; 
-	printf("Choose a book to return: "); scanf("%d", &choice);
 	while (fgets(line, sizeof(line), f_borrow) != NULL) {
 		if (lineNum == choice) {
 			fprintf(f, "%s", line);
@@ -423,7 +506,7 @@ void ReturnUpdate(Account *person, Book *book) {
 	printf("\nYour book is returned on %s\n", ctime(&current_time));
 }
 
-void Update() {
+void CheckUpdate() {
 	
 	FILE *f = fopen("updateInformation.txt", "r");
 	if (f == NULL) {
@@ -495,6 +578,40 @@ void SearchMember() {
 	else {
 		printf("Sorry. We could not find that member's name.\n");
 	}
+	
+}
+
+int countBook() {
+	
+	FILE *f = fopen(BOOK_FILE, "r");
+	if (f == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	}
+	int count = 0;
+	char line[MAX];
+	while(fgets(line, sizeof(line), f)) {
+		count++;
+	}
+	fclose(f);
+	return count;
+	
+}
+
+int countBBook() {
+	
+	FILE *f = fopen(BOOK_BRW, "r");
+	if (f == NULL) {
+		printf("Cannot open the file.\n");
+		exit(1);
+	}
+	int count = 0;
+	char line[MAX];
+	while(fgets(line, sizeof(line), f)) {
+		count++;
+	}
+	fclose(f);
+	return count;
 	
 }
 

@@ -1,10 +1,4 @@
-harry potter 1
-harry potter 2
-harry potter 3
 harry potter 4
 harry potter 5
-the book 2
-the book 3
-the book 4
-the book
-giet con chim nhai
+harry potter 6
+harry potter 7
